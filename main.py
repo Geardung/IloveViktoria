@@ -7,6 +7,7 @@ from aiogram.client.default import DefaultBotProperties
 from aiogram.enums import ParseMode
 from aiogram.filters import CommandStart, Command, callback_data
 from aiogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
+from aiogram.utils.markdown import link
 
 from config import TG_TOKEN
 
@@ -34,17 +35,23 @@ async def create_topic_callback(query: CallbackQuery, callback_data: MyCallback)
     
     new_topic = await query.message.bot.create_forum_topic(query.message.chat.id, "Новый чат")
     
+    await query.answer()
+    
     msg = await query.message.bot.send_message(
         text="Солнышко, если хочешь удалить этот чат, ты можешь воспользоваться кнопкой снизу\nТакже, кнопкой можно выбрать модель для конкретного чата!",
         reply_markup=markup_keyboard,
         chat_id=query.message.chat.id,
         message_thread_id=new_topic.message_thread_id)
     
-    print(msg.get_url(include_thread_id=True))
+    markup_keyboard = InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton(text="Перейти в новый чатик", url=msg.get_url(include_thread_id=True))]])
     
-    await query.answer(text="Солнышко, чат создан",
-                 url=msg.get_url(include_thread_id=True)
-                 )
+    dl_msg = await bot.send_message(query.message.chat.id, f"Солнце, {link('чатик', url=msg.get_url(include_thread_id=True) )} создан.",
+                                    reply_markup=markup_keyboard,
+                                    parse_mode="MARKDOWN")
+    
+    await asyncio.sleep(15)
+    
+    await dl_msg.delete()
     
     await msg.pin()
     
