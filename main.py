@@ -88,7 +88,7 @@ async def deererrelete_topic(message: Message):
     markup_keyboard = InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton(text="Новый чат", callback_data=MyCallback(state="create_new_topic").pack())]])
     
     msg = await message.bot.send_message(
-        text="Викуличка любимая, чтобы создать новый чат для диалога с ботом, нажми на кнопку снизу или введи в любом месте команду /new",
+        text="Викуличка любимая, чтобы создать новый чат для диалога с ботом, нажми на кнопку снизу",
         reply_markup=markup_keyboard,
         chat_id=message.chat.id)
     
