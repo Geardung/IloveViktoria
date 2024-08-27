@@ -1,6 +1,5 @@
 import asyncio
-import logging
-import sys
+import init
 
 from aiogram import Bot, Dispatcher, html, Router, F
 from aiogram.client.default import DefaultBotProperties
@@ -98,6 +97,14 @@ async def deererrelete_topic(message: Message):
 
     
 
+
+@main_router.message(Command("adm-thread-id"))
+async def delete_topic(message: Message):
+    
+    await message.reply(
+        f"{message.message_thread_id}"
+                        )
+
 @main_router.message(Command("adm-delete"))
 async def delete_topic(message: Message):
     
@@ -106,9 +113,14 @@ async def delete_topic(message: Message):
 
 
 @main_router.message()
-async def get_message(message: Message):
+async def any_topic_message(message: Message):
     
-    pass
+    if not message.chat.is_forum: return
+    elif not message.message_thread_id in [None, 3]: return
+    elif message.from_user.is_bot: return
+    
+    
+    
 
 dp.include_router(main_router)
 
