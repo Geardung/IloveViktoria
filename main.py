@@ -1,4 +1,5 @@
-import asyncio, openai, ujson, base64, requests
+import asyncio, openai, ujson, base64, markdown
+from telegraph import Telegraph
 from random import randint
 from datetime import datetime
 
@@ -8,7 +9,7 @@ from aiogram import Bot, Dispatcher, html, Router, F
 from aiogram.client.default import DefaultBotProperties
 from aiogram.enums import ParseMode
 from aiogram.filters import CommandStart, Command, callback_data
-from aiogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
+from aiogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery, ReactionTypeEmoji
 from aiogram.utils.markdown import link
 from aiogram.utils import chat_action
 
@@ -16,11 +17,11 @@ import asyncio
 from openai_streaming import process_response
 from typing import AsyncGenerator
 
-from config import TG_TOKEN, GPT_TOKEN
+from config import TG_TOKEN, GPT_TOKEN, TELEGRAPH_TOKEN
 
-print("ZHOPA")
+tg_paginator = Telegraph(TELEGRAPH_TOKEN)
 
-bot = Bot(token=TG_TOKEN, default=DefaultBotProperties())
+bot = Bot(token=TG_TOKEN, default=DefaultBotProperties(parse_mode="HTML"))
 dp = Dispatcher()
 main_router = Router()
 
@@ -34,32 +35,12 @@ client = openai.AsyncOpenAI(
 class MyCallback(callback_data.CallbackData, prefix="vikasex"):
     state: str
 
-async def main() -> None:
-    
-    await dp.start_polling(bot)
-
+async def main() -> None: await dp.start_polling(bot)
 
 def encode_image(image_path):
     with open(image_path, "rb") as image_file:
         return base64.b64encode(image_file.read()).decode('utf-8')
 
-# def generate_response(messages: list[dict[str, str]],
-#                       model = "gpt-4o-mini"
-#                       ):
-    
-#         _ = client.chat.completions.create(
-#             model=model,
-#             max_tokens=300,
-#             messages=messages,
-#             presence_penalty=0,
-#             #stream=True,
-#             temperature=0.5,
-#             top_p=1,
-#             frequency_penalty=0)
-        
-#         print(_)
-        
-#         return _.choices
 
 @main_router.callback_query(MyCallback.filter(F.state == "create_new_topic"))
 async def create_topic_callback(query: CallbackQuery, callback_data: MyCallback): 
@@ -75,7 +56,7 @@ async def create_topic_callback(query: CallbackQuery, callback_data: MyCallback)
     with open(THREADS_FOLDER_PATH + str(new_topic.message_thread_id) + ".json", "w", encoding="utf-8") as f:
         
         f.write(ujson.dumps({
-            "engine-selected-now": "gpt-4o-mini"
+            "engine-selected-now": "gpt-4o"
         }))
         
     
@@ -113,44 +94,126 @@ async def delete_topic(message: Message):
 @main_router.message()
 async def any_topic_message(message: Message):
     
+    def replace_markdownv2(text: str):
+        
+        n = text
+        
+        for _ in ['_', '*', '[', ']', '(', ')', '~', '`', '>', '#', '+', '-', '=', '|', '{', '}', '.', '!']:
+            
+            n = n.replace(_, f"\{_}")
+            
+        return n
+    
+    
     if not message.chat.is_forum: return
     elif message.message_thread_id in [None, 3]: return
     elif message.from_user.is_bot: return
+    
+    
+    #with open(THREADS_FOLDER_PATH + )
+    
     
     await bot.send_chat_action(chat_id=message.chat.id,
                          action="typing",
                          message_thread_id=message.message_thread_id,
                          )
     
-    #image_path = ".\SourceImages\some_text.jpg"
-    #base64_image = encode_image(image_path)
+    if message.photo:
     
-    imgs = []
+        # photo_pathes = []
+        photo_path = TEMP_FOLDER_PATH+str(randint(0, 9999999999))+"_"+str(int(datetime.now().timestamp())) + "_" + str(message.message_thread_id) + ".jpg"
+        # photo_pathes.append(_)
+        await bot.download(message.photo[-1], photo_path)
+            # 
+        # print(photo_pathes)
+            # 
+        # photo_promt = [{"type": "image_url", 
+                        # "image_url": {"url": f"data:image/jpeg;base64,{encode_image(img)}"}} for img in photo_pathes]
     
-    last_message_dict = {"role": "user", "name": "Викуличка", 
-         "content": [ {"type": "text", "text": message.text}] + [{"type": "image_url", "image_url": {"url": f"data:image/jpeg;base64,{base64_image}"}} for base64_image in imgs]}
-    
-    print([{"role": "user", "content": message.text or message.caption}])
-    
-    photo_pathes = []
-    _ = TEMP_FOLDER_PATH+str(randint(0, 9999999999))+"_"+str(int(datetime.now().timestamp())) + "_" + str(message.message_thread_id) + ".jpg"
-    photo_pathes.append(_)
-    await bot.download(message.photo[-1], _)
-        
-    photo_promt = [{"type": "image_url", "image_url": {"url": f"data:image/jpeg;base64,{encode_image(img)}"}} for img in photo_pathes]
     
     async def content_handler(content: AsyncGenerator[str, None]):
+        
+        n_msg = None
+        
+        cache = []
+        
+        old_message = ""
+        
         async for token in content:
-            print(token, end="")
             
+            if len(cache) >= 60: 
+            
+                print(old_message + replace_markdownv2("".join(cache)), end="\n----------\n")
+            
+                if not n_msg: n_msg = await message.reply("".join(cache), parse_mode="Markdown")
+                else: n_msg = await n_msg.edit_text( old_message + "".join(cache), parse_mode="Markdown")
+                
+                old_message = old_message + "".join(cache)
+                
+                cache = []
+                
+            else: cache.append(token)
+
+        if cache != []: 
+            if not n_msg: n_msg = await message.reply("".join(cache), parse_mode="Markdown")
+            else: await n_msg.edit_text(old_message + "".join(cache), parse_mode="Markdown")
+            cache = []
+            old_message = old_message + "".join(cache)
+        
+        await bot.set_message_reaction(message.chat.id,
+                                n_msg.message_id,
+                                [ReactionTypeEmoji(emoji="🤷‍♀")]
+                                )
+        
+        
+        resp = await client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[
+                {"role": "assistant", "content": old_message},
+                {"role": "user", "content": "Дай название чату"}]
+        )
+        
+        # if not message.photo:
+        
+        #     page = tg_paginator.create_page(title=resp.choices[0].message.content.split("\"")[1],
+        #                             html_content=markdown.markdown(old_message), 
+        #                             )
+
+        #     kb = InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton(text="Открыть статью", url=page["url"])]])
+            
+        #     await n_msg.edit_reply_markup(reply_markup=kb)
+        
+    
+    promt = [{"role": "system", "content": "Ты ассистент, который помогает выполнять домашнее задание из Университета. Пользуйся разметкой Markdown. Печатай правильно на Русском языке"}]
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    promt.append({"role": "user", "content": [{"type": "text", "text": message.text or message.caption or ("Проанализируй картинку и составь полный ответ" if message.photo else None)}]})
+    
+    if message.photo: promt[-1]["content"].append({"type": "image_url", "image_url": {"url": f"data:image/jpeg;base64,{encode_image(photo_path)}"}})
+    
+    print(promt)
+    
     resp = await client.chat.completions.create(
         model="gpt-4o-mini",
-        messages=[{"role": "user", "content": [{"type": "text", "text": message.text or message.caption}] + photo_promt}],
+        messages=promt,
+        temperature=0.2,
+        max_tokens=50000,
         stream=True
     )
     await process_response(resp, content_handler)
     
-            
+    
     
     # await message.reply(generate_response([{"role": "system", "content": "Ты умная лучшая подруга моей девушки Вики."}, 
     #                                        {"role": "user", "content": [{"type": "text", "text": message.text or message.caption}] + photo_promt}])\
