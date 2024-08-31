@@ -7,7 +7,7 @@ After=network.target
 Type=simple
 User=root
 WorkingDirectory=/home/IloveViktoria
-ExecStart=python3.11 /home/IloveViktoria/main.py
+ExecStart=python3 /home/IloveViktoria/main.py
 Restart=always
 
 [Install]

@@ -7,7 +7,7 @@ After=network.target
 Type=simple
 User=root
 WorkingDirectory=/home/IloveViktoria
-ExecStart=python3.11 /home/IloveViktoria/timetable.py
+ExecStart=python3 /home/IloveViktoria/timetable.py
 Restart=always
 
 [Install]
