@@ -148,7 +148,7 @@ timetable : dict[bool, list[Lesson]] = {
 
 lastcheck = datetime.fromtimestamp(float(loads(open(TT_JSON_PATH, encoding="utf-8").read())["last_check"]))
 
-if (lastcheck < (datetime.now() + timedelta(hours=23))) and (datetime.now().hour >= 18):
+if (lastcheck >= (datetime.now() + timedelta(hours=23))) and (datetime.now().hour >= 18):
     
     #https://t.me/c/2223916464/3/4
     
