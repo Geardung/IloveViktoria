@@ -148,9 +148,7 @@ timetable : dict[bool, list[Lesson]] = {
 
 lastcheck = datetime.fromtimestamp(float(loads(open(TT_JSON_PATH, encoding="utf-8").read())["last_check"]))
 
-print(lastcheck.year)
-
-if (lastcheck < (datetime.now() + timedelta(hours=23))) and (datetime.now().hour > 18):
+if (lastcheck < (datetime.now() + timedelta(hours=23))) and (datetime.now().hour >= 18):
     
     #https://t.me/c/2223916464/3/4
     
@@ -159,7 +157,7 @@ if (lastcheck < (datetime.now() + timedelta(hours=23))) and (datetime.now().hour
     text = f"""Расписание на {days[tommorow.weekday()]} {tommorow.strftime('%d.%m')}
     """
     
-    for _ in timetable[not tommorow.isocalendar().weekday % 2 == 0][tommorow.weekday()]:
+    for _ in timetable[tommorow.isocalendar().weekday % 2 == 0][tommorow.weekday()]:
         
         _: Lesson
         
@@ -168,7 +166,7 @@ if (lastcheck < (datetime.now() + timedelta(hours=23))) and (datetime.now().hour
         text += f"""
 <blockquote>{_.type.value if _.type else ''}{_.start.strftime(format)} — {_.end.strftime(format)}
 {_.label}
-{_.cabinet.corpuse.value}-{_.cabinet.number} | {_.teacher.family} {_.teacher.name} {_.teacher.second_name}        
+{_.cabinet.corpuse.value}-{_.cabinet.number} • {_.teacher.family} {_.teacher.name} {_.teacher.second_name}        
 </blockquote>"""
         
     
@@ -179,7 +177,5 @@ if (lastcheck < (datetime.now() + timedelta(hours=23))) and (datetime.now().hour
                 "parse_mode": "HTML",
                 "text": text}
     )
-    
-    print(r.status_code, r.text)
     
     with open(TT_JSON_PATH, "w", encoding="utf-8") as f: f.write("{\"last_check\": " + str(int(datetime.now().timestamp())) + "}")
