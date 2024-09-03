@@ -91,6 +91,8 @@ async def delete_topic(message: Message):
         f"{message.message_thread_id}"
                         )
 
+@main
+
 @main_router.message()
 async def any_topic_message(message: Message):
     
