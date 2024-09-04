@@ -175,16 +175,6 @@ async def any_topic_message(message: Message):
                 {"role": "user", "content": "Дай название чату"}]
         )
         
-        # if not message.photo:
-        
-        #     page = tg_paginator.create_page(title=resp.choices[0].message.content.split("\"")[1],
-        #                             html_content=markdown.markdown(old_message), 
-        #                             )
-
-        #     kb = InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton(text="Открыть статью", url=page["url"])]])
-            
-        #     await n_msg.edit_reply_markup(reply_markup=kb)
-        
     
     promt = [{"role": "system", "content": "Ты ассистент, который помогает выполнять домашнее задание из Университета. Пользуйся разметкой Markdown. Печатай правильно на Русском языке"}]
     
@@ -193,7 +183,7 @@ async def any_topic_message(message: Message):
     
     
     
-    
+    #TODO захуярить память
     
     
     
@@ -215,24 +205,6 @@ async def any_topic_message(message: Message):
     )
     await process_response(resp, content_handler)
     
-    
-    
-    # await message.reply(generate_response([{"role": "system", "content": "Ты умная лучшая подруга моей девушки Вики."}, 
-    #                                        {"role": "user", "content": [{"type": "text", "text": message.text or message.caption}] + photo_promt}])\
-                                               
-                                               
-    #                                            [0].message.content.replace(".", "\.").replace("(", "\(").replace("-", "\-"),
-    #                     parse_mode="MarkdownV2")
-
-
-
-# {
-    # “type”: “image_url”,
-    # “image_url”: {
-    #   “url”: f"data:image/jpeg;base64,{base64_image}"
-#     }
-# }
-
 
 dp.include_router(main_router)
 

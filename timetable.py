@@ -99,19 +99,19 @@ timetable : dict[bool, list[Lesson]] = {
             Lesson("Основы гражданского права", LessonType.practic_lesson, time(13, 45), time(15, 15), Teacher("Незнамова", "А.", "А."), Cabinet(Corpuse.A, 308)),
         ],
         [ # Четверг
-            Lesson("Теория и практика принятия политических решений", LessonType.lection, time(8, 15), time(9, 45), Teacher("Соколов", "Н.", "Н.")),
-            Lesson("Теория и практика принятия политических решений", LessonType.practic_lesson, time(9, 55), time(11, 25), Teacher("Соколов", "Н.", "Н.")),
+            Lesson("Теория и практика принятия политических решений", LessonType.lection, time(8, 15), time(9, 45), Teacher("Соколов", "Н.", "Н."), Cabinet(Corpuse.PA, 119)),
+            Lesson("Теория и практика принятия политических решений", LessonType.practic_lesson, time(9, 55), time(11, 25), Teacher("Соколов", "Н.", "Н."), Cabinet(Corpuse.A, 308)),
             Lesson("Физ-ра", None, time(11, 35), time(13, 5)),
-            Lesson("Государственное регулирование экономики", LessonType.practic_lesson, time(13, 45), time(15, 15), Teacher("Матвеева", "Н.", "С.")),
+            Lesson("Государственное регулирование экономики", LessonType.practic_lesson, time(13, 45), time(15, 15), Teacher("Матвеева", "Н.", "С."), Cabinet(Corpuse.LK, 404)),
         ],
         [ # Пятница
-            Lesson("Основы профессиональной этики и этические аспекты политической медиации", LessonType.practic_lesson, time(11, 35), time(13, 5), Teacher("Гаганова", "Е.", "В.")),
-            Lesson("Государственная миграционная политика", LessonType.practic_lesson, time(13, 45), time(15, 15), Teacher("Волох", "В.", "А.")),
+            Lesson("Основы профессиональной этики и этические аспекты политической медиации", LessonType.practic_lesson, time(11, 35), time(13, 5), Teacher("Гаганова", "Е.", "В."), Cabinet(Corpuse.LK, 432)),
+            Lesson("Государственная миграционная политика", LessonType.practic_lesson, time(13, 45), time(15, 15), Teacher("Волох", "В.", "А."), Cabinet(Corpuse.A, 315)),
         ],
         [ # Суббота
-            Lesson("Стратегическое управление в политической сфере", LessonType.lection, time(9, 55), time(11, 25), Teacher("Филимонов", "Д.", "А.")),
+            Lesson("Стратегическое управление в политической сфере", LessonType.lection, time(9, 55), time(11, 25), Teacher("Филимонов", "Д.", "А."), Cabinet(Corpuse.PA, 121)),
             Lesson("Физ-ра", None, time(11, 35), time(13, 5)),
-            Lesson("Стратегическое управление в политической сфере", LessonType.practic_lesson, time(13, 45), time(15, 15), Teacher("Филимонов", "Д.", "А.")),
+            Lesson("Стратегическое управление в политической сфере", LessonType.practic_lesson, time(13, 45), time(15, 15), Teacher("Филимонов", "Д.", "А."), Cabinet(Corpuse.A, 224)),
         ],
         None # Воскресенье
     ],
@@ -150,8 +150,6 @@ timetable : dict[bool, list[Lesson]] = {
 
 lastcheck = datetime.fromtimestamp(float(loads(open(TT_JSON_PATH, encoding="utf-8").read())["last_check"]))
 
-print(lastcheck, (datetime.now() + timedelta(hours=20)), lastcheck >= (datetime.now() + timedelta(hours=23)), (datetime.now().hour >= 18))
-
 if ((lastcheck + timedelta(hours=20)) <= datetime.now()) and (datetime.now().hour >= 18):
     
     #https://t.me/c/2223916464/3/4
@@ -162,14 +160,12 @@ if ((lastcheck + timedelta(hours=20)) <= datetime.now()) and (datetime.now().hou
     """
     
     for _ in timetable[not tommorow.isocalendar().weekday % 2 == 0][tommorow.weekday()]:
-        
         _: Lesson
-        
-        print(_.label)
         
         format = "%H:%M"
         
-        text += f"""<blockquote>{_.type.value if _.type else ''}{_.start.strftime(format)} — {_.end.strftime(format)}
+        text += f"""
+<blockquote>{_.type.value if _.type else ''}{_.start.strftime(format)} — {_.end.strftime(format)}
 {_.label}
 {_.cabinet.corpuse.value}-{_.cabinet.number} • {_.teacher.family} {_.teacher.name} {_.teacher.second_name}</blockquote>"""
         
