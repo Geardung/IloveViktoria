@@ -20,6 +20,7 @@ class Corpuse(str, Enum):
         - pl - Практическое занятие
 
     """
+    FIZRA = "Зал"
     PA = "ПА"
     A = "A"
     LK = "ЛК"
@@ -36,17 +37,17 @@ class Teacher(BaseClass):
     name: str = None
     second_name: str = None
     
-    def __init__(self, family: str = None, name: str = None, second_name: str = None) -> None:
+    def __init__(self, family: str = "Фамилия", name: str = "И.", second_name: str = "О.") -> None:
         
         self.family: str = family
         self.name: str = name
         self.second_name: str = second_name
 
 class Cabinet(BaseClass):
-    corpuse: Corpuse = None
-    number: str = None
+    corpuse: Corpuse = Corpuse.FIZRA
+    number: str = ""
     
-    def __init__(self, corpuse: Corpuse = None, number: str = None,) -> None:
+    def __init__(self, corpuse: Corpuse = Corpuse.FIZRA, number: str = "") -> None:
         self.corpuse: Corpuse = corpuse
         self.number: str = number
 
@@ -130,17 +131,17 @@ timetable : dict[bool, list[Lesson]] = {
         [ # Четверг
             Lesson("Государственное регулирование экономики", LessonType.lection, time(8, 15), time(9, 45), Teacher("Матвеева", "Н.", "С."), Cabinet(Corpuse.PA, 119)),
             Lesson("Теория и практика принятия политических решений", LessonType.practic_lesson, time(9, 55), time(11, 25), Teacher("Соколов", "Н.", "Н."), Cabinet(Corpuse.A, 308)),
-            Lesson("Физ-ра", None, time(11, 35), time(13, 5)),
+            Lesson("Физ-ра", None, time(11, 35), time(13, 5), Teacher(), Cabinet()),
             Lesson("Государственное регулирование экономики", LessonType.practic_lesson, time(13, 45), time(15, 15), Teacher("Матвеева", "Н.", "С."), Cabinet(Corpuse.LK, 404)),
         ],
         [ # Пятница
             Lesson("Основы профессиональной этики и этические аспекты политической медиации", LessonType.lection, time(8, 15), time(9, 45), Teacher("Гаганова", "Е.", "В."), Cabinet(Corpuse.PA, 213)),
-            Lesson("Государственная миграционная политика", LessonType.lection, time(9, 55), time(11, 25), Teacher("Волох", "В.", "А."), Corpuse(Corpuse.PA, 213)),
+            Lesson("Государственная миграционная политика", LessonType.lection, time(9, 55), time(11, 25), Teacher("Волох", "В.", "А."), Cabinet(Corpuse.PA, 213)),
             Lesson("Основы профессиональной этики и этические аспекты политической медиации", LessonType.practic_lesson, time(11, 35), time(13, 5), Teacher("Гаганова", "Е.", "В."), Cabinet(Corpuse.LK, 432)),
         ],
         [ # Суббота
             Lesson("Международные организации", LessonType.lection, time(9, 55), time(11, 25), Teacher("Филимонов", "Д.", "А."), Cabinet(Corpuse.PA, 121)),
-            Lesson("Физ-ра", None, time(11, 35), time(13, 5)),
+            Lesson("Физ-ра", None, time(11, 35), time(13, 5), Teacher(), Cabinet()),
             Lesson("Международные организации", LessonType.practic_lesson, time(13, 45), time(15, 15), Teacher("Филимонов", "Д.", "А."), Cabinet(Corpuse.LK, 124)),
         ],
         None # Воскресенье
@@ -160,9 +161,11 @@ if ((lastcheck + timedelta(hours=20)) <= datetime.now()) and (datetime.now().hou
     text = f"""Расписание на {days[tommorow.weekday()]} {tommorow.strftime('%d.%m')}
     """
     
-    for _ in timetable[tommorow.isocalendar().weekday % 2 == 0][tommorow.weekday()]:
+    for _ in timetable[not tommorow.isocalendar().weekday % 2 == 0][tommorow.weekday()]:
         
         _: Lesson
+        
+        print(_.label)
         
         format = "%H:%M"
         
