@@ -16,7 +16,7 @@ if not os.path.exists(TEMP_FOLDER_PATH): os.mkdir(TEMP_FOLDER_PATH)
 else:
     for file in os.listdir(TEMP_FOLDER_PATH):
         if file == TT_JSON_NAME: continue
-        elif ("_" in file) and (datetime.datetime.fromtimestamp(float(file.split("_")[1])) <= (datetime.timedelta(days=7) - datetime.datetime.now())): os.remove(TEMP_FOLDER_PATH+file)
+        elif ("_" in file) and (datetime.datetime.fromtimestamp(float(file.split("_")[1])) <= (datetime.datetime.now() - datetime.timedelta(days=7))): os.remove(TEMP_FOLDER_PATH+file)
     
 if not os.path.exists(TT_JSON_PATH): open(TT_JSON_PATH, "w", encoding="utf-8").write("{\"last_check\": 0}")
 
