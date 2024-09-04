@@ -22,6 +22,7 @@ class Corpuse(str, Enum):
     """
     PA = "ПА"
     A = "A"
+    LK = "ЛК"
 
 class BaseClass():
     
@@ -127,20 +128,20 @@ timetable : dict[bool, list[Lesson]] = {
             Lesson("Основы гражданского права", LessonType.practic_lesson, time(13, 45), time(15, 15), Teacher("Незнамова", "А.", "А."), Cabinet(Corpuse.A, 308)),
         ],
         [ # Четверг
-            Lesson("Государственное регулирование экономики", LessonType.lection, time(8, 15), time(9, 45), Teacher("Матвеева", "Н.", "С.")),
-            Lesson("Теория и практика принятия политических решений", LessonType.practic_lesson, time(9, 55), time(11, 25), Teacher("Соколов", "Н.", "Н.")),
+            Lesson("Государственное регулирование экономики", LessonType.lection, time(8, 15), time(9, 45), Teacher("Матвеева", "Н.", "С."), Cabinet(Corpuse.PA, 119)),
+            Lesson("Теория и практика принятия политических решений", LessonType.practic_lesson, time(9, 55), time(11, 25), Teacher("Соколов", "Н.", "Н."), Cabinet(Corpuse.A, 308)),
             Lesson("Физ-ра", None, time(11, 35), time(13, 5)),
-            Lesson("Государственное регулирование экономики", LessonType.practic_lesson, time(13, 45), time(15, 15), Teacher("Матвеева", "Н.", "С.")),
+            Lesson("Государственное регулирование экономики", LessonType.practic_lesson, time(13, 45), time(15, 15), Teacher("Матвеева", "Н.", "С."), Cabinet(Corpuse.LK, 404)),
         ],
         [ # Пятница
-            Lesson("Основы профессиональной этики и этические аспекты политической медиации", LessonType.lection, time(8, 15), time(9, 45), Teacher("Гаганова", "Е.", "В.")),
-            Lesson("Государственная миграционная политика", LessonType.lection, time(9, 55), time(11, 25), Teacher("Волох", "В.", "А.")),
-            Lesson("Основы профессиональной этики и этические аспекты политической медиации", LessonType.practic_lesson, time(11, 35), time(13, 5), Teacher("Гаганова", "Е.", "В.")),
+            Lesson("Основы профессиональной этики и этические аспекты политической медиации", LessonType.lection, time(8, 15), time(9, 45), Teacher("Гаганова", "Е.", "В."), Cabinet(Corpuse.PA), 213),
+            Lesson("Государственная миграционная политика", LessonType.lection, time(9, 55), time(11, 25), Teacher("Волох", "В.", "А."), Corpuse(Corpuse.PA, 213)),
+            Lesson("Основы профессиональной этики и этические аспекты политической медиации", LessonType.practic_lesson, time(11, 35), time(13, 5), Teacher("Гаганова", "Е.", "В."), Cabinet(Corpuse.LK, 432)),
         ],
         [ # Суббота
-            Lesson("Международные организации", LessonType.lection, time(9, 55), time(11, 25), Teacher("Филимонов", "Д.", "А.")),
+            Lesson("Международные организации", LessonType.lection, time(9, 55), time(11, 25), Teacher("Филимонов", "Д.", "А."), Cabinet(Corpuse.PA, 121)),
             Lesson("Физ-ра", None, time(11, 35), time(13, 5)),
-            Lesson("Международные организации", LessonType.practic_lesson, time(13, 45), time(15, 15), Teacher("Филимонов", "Д.", "А.")),
+            Lesson("Международные организации", LessonType.practic_lesson, time(13, 45), time(15, 15), Teacher("Филимонов", "Д.", "А."), Cabinet(Corpuse.LK, 124)),
         ],
         None # Воскресенье
     ]
@@ -148,9 +149,9 @@ timetable : dict[bool, list[Lesson]] = {
 
 lastcheck = datetime.fromtimestamp(float(loads(open(TT_JSON_PATH, encoding="utf-8").read())["last_check"]))
 
-print(lastcheck, (datetime.now() + timedelta(hours=23)), lastcheck >= (datetime.now() + timedelta(hours=23)), (datetime.now().hour >= 18))
+print(lastcheck, (datetime.now() + timedelta(hours=20)), lastcheck >= (datetime.now() + timedelta(hours=23)), (datetime.now().hour >= 18))
 
-if ((lastcheck + timedelta(hours=23)) <= datetime.now()) and (datetime.now().hour >= 18):
+if ((lastcheck + timedelta(hours=20)) <= datetime.now()) and (datetime.now().hour >= 18):
     
     #https://t.me/c/2223916464/3/4
     
@@ -165,11 +166,9 @@ if ((lastcheck + timedelta(hours=23)) <= datetime.now()) and (datetime.now().hou
         
         format = "%H:%M"
         
-        text += f"""
-<blockquote>{_.type.value if _.type else ''}{_.start.strftime(format)} — {_.end.strftime(format)}
+        text += f"""<blockquote>{_.type.value if _.type else ''}{_.start.strftime(format)} — {_.end.strftime(format)}
 {_.label}
-{_.cabinet.corpuse.value}-{_.cabinet.number} • {_.teacher.family} {_.teacher.name} {_.teacher.second_name}        
-</blockquote>"""
+{_.cabinet.corpuse.value}-{_.cabinet.number} • {_.teacher.family} {_.teacher.name} {_.teacher.second_name}</blockquote>"""
         
     
     r = requests.post(
