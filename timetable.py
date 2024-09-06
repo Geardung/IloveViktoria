@@ -101,7 +101,7 @@ timetable : dict[bool, list[Lesson]] = {
         [ # Четверг
             Lesson("Теория и практика принятия политических решений", LessonType.lection, time(8, 15), time(9, 45), Teacher("Соколов", "Н.", "Н."), Cabinet(Corpuse.PA, 119)),
             Lesson("Теория и практика принятия политических решений", LessonType.practic_lesson, time(9, 55), time(11, 25), Teacher("Соколов", "Н.", "Н."), Cabinet(Corpuse.A, 308)),
-            Lesson("Физ-ра", None, time(11, 35), time(13, 5)),
+            Lesson("Физ-ра", None, time(11, 35), time(13, 5), Teacher(), Cabinet()),
             Lesson("Государственное регулирование экономики", LessonType.practic_lesson, time(13, 45), time(15, 15), Teacher("Матвеева", "Н.", "С."), Cabinet(Corpuse.LK, 404)),
         ],
         [ # Пятница
@@ -110,7 +110,7 @@ timetable : dict[bool, list[Lesson]] = {
         ],
         [ # Суббота
             Lesson("Стратегическое управление в политической сфере", LessonType.lection, time(9, 55), time(11, 25), Teacher("Филимонов", "Д.", "А."), Cabinet(Corpuse.PA, 121)),
-            Lesson("Физ-ра", None, time(11, 35), time(13, 5)),
+            Lesson("Физ-ра", None, time(11, 35), time(13, 5), Teacher(), Cabinet()),
             Lesson("Стратегическое управление в политической сфере", LessonType.practic_lesson, time(13, 45), time(15, 15), Teacher("Филимонов", "Д.", "А."), Cabinet(Corpuse.A, 224)),
         ],
         None # Воскресенье
