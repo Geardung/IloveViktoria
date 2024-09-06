@@ -159,7 +159,7 @@ if ((lastcheck + timedelta(hours=20)) <= datetime.now()) and (datetime.now().hou
     text = f"""Расписание на {days[tommorow.weekday()]} {tommorow.strftime('%d.%m')}
     """
     
-    for _ in timetable[tommorow.isocalendar().weekday % 2 == 0][tommorow.weekday()]:
+    for _ in timetable[not tommorow.isocalendar().weekday % 2 == 0][tommorow.weekday()]:
         _: Lesson
         
         format = "%H:%M"
