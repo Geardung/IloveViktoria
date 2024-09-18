@@ -91,8 +91,6 @@ async def delete_topic(message: Message):
         f"{message.message_thread_id}"
                         )
 
-@main
-
 @main_router.message()
 async def any_topic_message(message: Message):
     
@@ -168,12 +166,12 @@ async def any_topic_message(message: Message):
                                 )
         
         
-        resp = await client.chat.completions.create(
-            model="gpt-4o-mini",
-            messages=[
-                {"role": "assistant", "content": old_message},
-                {"role": "user", "content": "Дай название чату"}]
-        )
+        #resp = await client.chat.completions.create(
+        #    model="gpt-4o-mini",
+        #    messages=[
+        #        {"role": "assistant", "content": old_message},
+        #        {"role": "user", "content": "Дай название чату"}]
+        #)
         
     
     promt = [{"role": "system", "content": "Ты ассистент, который помогает выполнять домашнее задание из Университета. Пользуйся разметкой Markdown. Печатай правильно на Русском языке"}]
