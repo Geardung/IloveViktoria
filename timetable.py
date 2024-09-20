@@ -138,6 +138,7 @@ timetable : dict[bool, list[Lesson]] = {
             Lesson("Основы профессиональной этики и этические аспекты политической медиации", LessonType.lection, time(8, 15), time(9, 45), Teacher("Гаганова", "Е.", "В."), Cabinet(Corpuse.PA, 213)),
             Lesson("Государственная миграционная политика", LessonType.lection, time(9, 55), time(11, 25), Teacher("Волох", "В.", "А."), Cabinet(Corpuse.PA, 213)),
             Lesson("Основы профессиональной этики и этические аспекты политической медиации", LessonType.practic_lesson, time(11, 35), time(13, 5), Teacher("Гаганова", "Е.", "В."), Cabinet(Corpuse.LK, 432)),
+            Lesson("Государственная Миграционная политика", LessonType.practic_lesson, time(13, 45), time(15, 15), Teacher("Волох", "В.", "А."), Cabinet(Corpuse.A, 315)),
         ],
         [ # Суббота
             Lesson("Международные организации", LessonType.lection, time(9, 55), time(11, 25), Teacher("Филимонов", "Д.", "А."), Cabinet(Corpuse.PA, 121)),

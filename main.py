@@ -31,6 +31,13 @@ client = openai.AsyncOpenAI(
     base_url="https://lk.neuroapi.host/v1"
 )
 
+anthr_client = openai.AsyncOpenAI(
+    api_key=GPT_TOKEN,
+    base_url="https://neuroapi.host/v1"
+)
+
+
+
 
 class MyCallback(callback_data.CallbackData, prefix="vikasex"):
     state: str
@@ -201,6 +208,7 @@ async def any_topic_message(message: Message):
         max_tokens=50000,
         stream=True
     )
+    
     await process_response(resp, content_handler)
     
 
