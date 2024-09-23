@@ -28,12 +28,12 @@ main_router = Router()
 
 client = openai.AsyncOpenAI(
     api_key=GPT_TOKEN,
-    base_url="https://lk.neuroapi.host/v1"
+    base_url="https://bothub.chat/api/v2/openai/v1"
 )
 
 anthr_client = openai.AsyncOpenAI(
     api_key=GPT_TOKEN,
-    base_url="https://neuroapi.host/v1"
+    base_url="https://bothub.chat/api/v2/openai/v1"
 )
 
 
@@ -202,7 +202,7 @@ async def any_topic_message(message: Message):
     print(promt)
     
     resp = await client.chat.completions.create(
-        model="gpt-4o-mini",
+        model="gpt-4o-mini-2024-07-18",
         messages=promt,
         temperature=0.2,
         max_tokens=50000,
